@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "686805720418",
+    "project_id": "ediglobe-task",
+    "storage_bucket": "ediglobe-task.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686805720418:android:6dd704f0dc78f186ebe03b",
+        "android_client_info": {
+          "package_name": "com.example.ediglobe_task"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "686805720418-sndi7dntipvfqe8a5mt5v0davf5f3aft.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ediglobe_task",
+            "certificate_hash": "5fa33f63d0ba260aee3394f287653daae1875713"
+          }
+        },
+        {
+          "client_id": "686805720418-rkispq38r71o64ehjvf4tcoti0e9gobr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2CnYNr4LteNjET-9vbK3cc9L5v9RfqUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "686805720418-rkispq38r71o64ehjvf4tcoti0e9gobr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

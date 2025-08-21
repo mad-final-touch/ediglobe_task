@@ -2,6 +2,7 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   id("com.google.devtools.ksp") version "2.0.21-1.0.26"
+  alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -38,6 +39,22 @@ android {
 }
 
 dependencies {
+//  implementation(libs.firebase.auth)
+//  implementation(libs.androidx.credentials)
+//  implementation(libs.androidx.credentials.play.services.auth)
+//  implementation(libs.googleid)
+  implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+  implementation("com.firebaseui:firebase-ui-auth:9.0.0")
+
+  // Add the dependency for the Firebase Authentication library
+  // When using the BoM, you don't specify versions in Firebase library dependencies
+  implementation("com.google.firebase:firebase-auth")
+
+  // Also add the dependencies for the Credential Manager libraries and specify their versions
+  implementation("androidx.credentials:credentials:1.3.0")
+  implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+  implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+  implementation(libs.firebase.crashlytics.buildtools)
   val room_version = "2.6.1"
   val lifecycle_version = "2.8.0"
   val retrofit_version = "2.9.0" // Common stable version
