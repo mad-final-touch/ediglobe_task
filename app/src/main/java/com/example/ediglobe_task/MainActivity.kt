@@ -2,6 +2,7 @@ package com.example.ediglobe_task
 
 import android.app.Activity.RESULT_OK
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.credentials.Credential
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var taskViewModel: TaskViewModel
     private lateinit var taskAdapter: TaskAdapter
+    private lateinit var loginButton: Button
+    private lateinit var auth: FirebaseAuth
 
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
@@ -39,7 +42,48 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        // Instantiate a Google sign-in request
+
+        auth = FirebaseAuth.getInstance()
+
+        setupToolbar()
+        setupViewModel()
+        setupRecyclerView()
+        setupAddTaskButton()
+        setupLoginButton()
+        updateUIBasedOnAuthState() // Set initial state of the login button
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false) // Optional: if you don't want a title
+    }
+
+    private fun setupLoginButton() {
+        // Assuming R.id.buttonLogin is the ID of the Button in your Toolbar
+        // If using ViewBinding directly for the button in the toolbar, you might use binding.buttonLogin
+        loginButton = findViewById<Button>(R.id.buttonLogin) 
+        // The click listener will be set by updateUIBasedOnAuthState()
+    }
+
+    private fun updateUIBasedOnAuthState() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            // User is signed in
+            taskViewModel.refreshTasksFromServer()
+            loginButton.text = "Logout"
+            loginButton.setOnClickListener {
+                signOut()
+            }
+        } else {
+            // User is signed out
+            loginButton.text = "Login"
+            loginButton.setOnClickListener {
+                startSignInFlow()
+            }
+        }
+    }
+
+    private fun startSignInFlow() {
         // Choose authentication providers
         val providers = arrayListOf(
             AuthUI.IdpConfig.GoogleBuilder().build()
@@ -52,26 +96,23 @@ class MainActivity : AppCompatActivity() {
             .setLogo(R.drawable.ic_launcher_foreground) // optional
             .build()
         signInLauncher.launch(signInIntent)
+    }
 
+    private fun signOut() {
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener {
+                Toast.makeText(this, "You have been signed out.", Toast.LENGTH_SHORT).show()
+                updateUIBasedOnAuthState()
+            }
+    }
 
-
+    private fun setupViewModel() {
         val viewModelFactory = TaskViewModelFactory(application)
         taskViewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
 
-        setupRecyclerView()
-
         taskViewModel.allTasks.observe(this) { tasks ->
             tasks?.let { taskAdapter.submitList(it) }
-        }
-
-        binding.buttonAddTask.setOnClickListener {
-            val taskTitle = binding.editTextNewTask.text.toString().trim()
-            if (taskTitle.isNotEmpty()) {
-                taskViewModel.insert(Task(title = taskTitle))
-                binding.editTextNewTask.text.clear()
-            } else {
-                Toast.makeText(this, "Task title cannot be empty", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -94,18 +135,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun firebaseAuthWithGoogle(idToken: String) {}
-
-private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
-    val response = result.idpResponse
-    if (result.resultCode == RESULT_OK) {
-        // Successfully signed in
-        val user = FirebaseAuth.getInstance().currentUser
-        Toast.makeText(this, "Welcome ${user?.displayName}", Toast.LENGTH_SHORT).show()
-    } else {
-        // Sign in failed
-        Toast.makeText(this, "Sign-In Failed", Toast.LENGTH_SHORT).show()
+    private fun setupAddTaskButton() {
+        binding.buttonAddTask.setOnClickListener {
+            val taskTitle = binding.editTextNewTask.text.toString().trim()
+            if (taskTitle.isNotEmpty()) {
+                taskViewModel.insert(Task(title = taskTitle))
+                binding.editTextNewTask.text.clear()
+            } else {
+                Toast.makeText(this, "Task title cannot be empty", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
-}
+
+    private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
+        if (result.resultCode == RESULT_OK) {
+            val user = FirebaseAuth.getInstance().currentUser
+            Toast.makeText(this, "Welcome ${user?.displayName}", Toast.LENGTH_SHORT).show()
+            updateUIBasedOnAuthState()
+            taskViewModel.refreshTasksFromServer() // <--- ADD THIS
+        } else {
+            // Sign in failed
+            val response = result.idpResponse
+            if (response == null) {
+                Toast.makeText(this, "Sign-In Cancelled", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Sign-In Failed: ${response.error?.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+        updateUIBasedOnAuthState() // Update button text/action after sign-in attempt
+    }
+
+    // This function was unused and has been kept as is.
+    private fun firebaseAuthWithGoogle(idToken: String) {}
 }

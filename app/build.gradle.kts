@@ -45,6 +45,9 @@ dependencies {
 //  implementation(libs.googleid)
   implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
   implementation("com.firebaseui:firebase-ui-auth:9.0.0")
+  implementation("com.squareup.retrofit2:retrofit:3.0.0")
+  implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+//  implementation("com.squareup.okhttp3:logging-interceptor:4.12.0") // Optional for logging
 
   // Add the dependency for the Firebase Authentication library
   // When using the BoM, you don't specify versions in Firebase library dependencies
@@ -58,7 +61,7 @@ dependencies {
   val room_version = "2.6.1"
   val lifecycle_version = "2.8.0"
   val retrofit_version = "2.9.0" // Common stable version
-  val okhttp_logging_interceptor_version = "4.12.0" // Compatible with Retrofit 2.9.x
+//  val okhttp_logging_interceptor_version = "4.12.0" // Compatible with Retrofit 2.9.x
 
   // Room
   implementation("androidx.room:room-runtime:$room_version")
@@ -74,8 +77,8 @@ dependencies {
   implementation("com.squareup.retrofit2:converter-gson:$retrofit_version")
 
   // OkHttp Logging Interceptor
-  implementation("com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version")
-
+//  implementation("com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version")
+  implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)
   implementation(libs.material)

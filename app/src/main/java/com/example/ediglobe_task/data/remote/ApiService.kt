@@ -10,15 +10,18 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
-    @GET("tasks.json") // Assuming Firebase Realtime Database endpoint
-    suspend fun getTasks(): Response<Map<String, Task>> // Firebase returns objects as Maps
+    // Note: {userId} is a placeholder for the actual authenticated user's ID.
+    // This will typically be passed in from your Repository/ViewModel layer.
 
-    @POST("tasks.json")
-    suspend fun createTask(@Body task: Task): Response<Map<String, String>> // Firebase returns the key of the new item
+    @GET("users/{userId}/tasks.json")
+    suspend fun getTasks(@Path("userId") userId: String): Response<Map<String, Task>>
 
-    @PUT("tasks/{id}.json")
-    suspend fun updateTask(@Path("id") taskId: String, @Body task: Task): Response<Task>
+    @POST("users/{userId}/tasks.json")
+    suspend fun createTask(@Path("userId") userId: String, @Body task: Task): Response<Map<String, String>> // Firebase returns the key of the new item
 
-    @DELETE("tasks/{id}.json")
-    suspend fun deleteTask(@Path("id") taskId: String): Response<Unit>
+    @PUT("users/{userId}/tasks/{taskId}.json")
+    suspend fun updateTask(@Path("userId") userId: String, @Path("taskId") taskId: String, @Body task: Task): Response<Task>
+
+    @DELETE("users/{userId}/tasks/{taskId}.json")
+    suspend fun deleteTask(@Path("userId") userId: String, @Path("taskId") taskId: String): Response<Unit>
 }
